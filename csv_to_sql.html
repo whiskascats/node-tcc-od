@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+  <script>
+    function getCSV() {
+      axios.get('/public/files/srt_import_data.csv')
+      .then(res => {
+        const rows = res.data.replace(/"/g, "\'").split('\r\n').map(row => row.split(','));
+        const header = rows[0].map(item => item.replace(/'/g, ''))
+        let sql = `INSERT INTO srt_import_data (${header.join(',')}) VALUES`;
+        for (let i = 1; i < rows.length; i++) {
+          const values = rows[i]
+          sql += `(${values.join(',')}),`
+        }
+        sql = sql.slice(0, -1)
+        console.log(sql);
+      })
+    }
+    (function() {
+      getCSV()
+    })()
+  </script>
+</body>
+</html>
